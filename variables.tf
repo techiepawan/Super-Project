@@ -5,10 +5,10 @@ variable "aws_region" {
 
 variable "aws_type" {
   description = "AWS ec2 type"
-  default = "t3.medium"
+  default = "t2.medium"
 }
 
 variable "aws_ami" {
   description = "AWS ami"
-  default = "ami-022661f8a4a1b91cf"
+  default = "ami-01816d07b1128cd2d"
 }
