@@ -29,6 +29,12 @@ sudo unzip sonarqube-10.1.0.73491.zip
 
 ## 6.. change the ownership of sonarqube 
 sudo chown -R sonarqube:sonarqube sonarqube-10.1.0.73491
+
+update the password for below:
+   12  sudo passwd sonarqube              >>> I used to go for default sonarqube > sonar
+   13  sudo passwd ec2-user               >>> I used to go for default ec2-user > ec2-user
+   14  sudo passwd root                   >>> I used to go for default root > root
+
 su sonarqube
 
 ## 7.. start the server 
