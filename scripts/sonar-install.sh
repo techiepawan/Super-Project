@@ -17,7 +17,7 @@ sudo useradd sonarqube
 
 ## down the sonarqube community verison using tghe wget command
 
-wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-10.1.0.73491.zip
+sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-10.1.0.73491.zip
 
 ## 4. move it /opt
 
