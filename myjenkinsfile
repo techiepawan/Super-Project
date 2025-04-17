@@ -1,0 +1,68 @@
+pipeline{
+    agent any
+    options {
+    buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '15', numToKeepStr: '5')
+    }
+    tools {
+        maven 'maven'
+    }
+
+    environment{
+        cred = credentials('aws-key')
+    }
+    stages{
+        stage('checkout stage'){
+            steps{
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/techiepawan/Super-Project.git']])
+            }
+        }
+        stage('maven build stage'){
+            steps{
+                sh 'mvn package'
+            }
+        }
+        stage('sonar test') {
+            steps{
+                script{
+                    def mvn = tool 'maven';
+                    withSonarQubeEnv(installationName: 'sonarqube-server') {
+                        sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=superproject -Dsonar.projectName='superproject'"
+                    }
+                }    
+            }     
+        }
+        stage('docker build'){
+            steps{
+                sh 'docker build -t 879381250162.dkr.ecr.us-east-1.amazonaws.com/super-project:${BUILD_NUMBER} .'
+
+            }
+        }
+        stage('Pushing the image to ECR'){
+            steps{
+                sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 879381250162.dkr.ecr.us-east-1.amazonaws.com'
+                sh 'docker push 879381250162.dkr.ecr.us-east-1.amazonaws.com/super-project:${BUILD_NUMBER}'
+                sh 'docker tag 879381250162.dkr.ecr.us-east-1.amazonaws.com/super-project:${BUILD_NUMBER} 879381250162.dkr.ecr.us-east-1.amazonaws.com/super-project:latest'
+                sh 'docker push 879381250162.dkr.ecr.us-east-1.amazonaws.com/super-project:latest'
+
+            }
+        }
+        stage('Deploy to EKS'){
+            steps{
+                sh 'aws eks update-kubeconfig --region us-east-1 --name devops-working'
+                sh 'kubectl apply -f Application.yaml'
+            }
+        }
+    }    
+    post {
+        always {
+            echo "job is completed"// One or more steps need to be included within each condition's block.
+        }
+        success {
+            echo "job is successful"// One or more steps need to be included within each condition's block
+        }
+        failure {
+            echo "its a failure" // One or more steps need to be included within each condition's block.
+        }
+
+    }
+} 
