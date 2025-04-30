@@ -32,6 +32,8 @@
 #     port: 80
 #     targetPort: 8080 
 
+#Below is the YAML used to create the staging environment
+
 apiVersion: v1
 kind: Namespace
 metadata:
